@@ -46,6 +46,29 @@ func (h *Header) String() string {
 }
 
 // readHeader decompresses a Header from an io.Reader. The docs on this format may not exist.
+// Here is a typical header generated for a linux kernel used in a FIT.
+// 00000000  89 4c 5a 4f 00 0d 0a 1a  0a
+//           10 40
+//           20 a0
+//           09 40
+//           01  |.LZO......@ ..@.|
+// 00000010  05
+//           03 00 00 01   // flags.
+//                         no filter
+//           00 00 81 ed // Mode
+//           5f 6e 4d cf // Mtime
+//           00 00 00  |........._nM....|
+// 00000020  00 // GMTIME
+// namelen 0e 76 6d 6c 69 6e 75  78 2e 62 69 6e 61 72 79  |..vmlinux.binary|
+// past the name.
+// From here on, whatever it is, it us a uint32
+// 00000030  a9 d5 0a 8f
+//           00 04 00 00
+//           00 03 06 bb
+//           e8 97 4a 8a  |..............J.|
+// 00000040  00 28 48 8d // is this optional? *yes this may be the optional part. *
+// There will be at most this much, but this may be too much.
+//            25 51 3f c0  00 e8 d4 00 00 00 48 8d  |.(H.%Q?.......H.|
 func readHeader(r io.Reader) (*Header, error) {
 	var h Header
 
@@ -59,7 +82,7 @@ func readHeader(r io.Reader) (*Header, error) {
 	var n byte
 	// This would be so easy were the variable data not in the middle. but ...
 	// We could use reflect here, but ... eh. It's not that complex.
-	for _, f := range []interface{}{&h.Version, &h.LibVersion, &h.LibVersion, &h.Method, &h.Level, &h.Flags, &h.Filter, &h.Mode, &h.Mtime, &h.GMTDiff, &n, &h.DataCSUM, &h.UnCompressedSize, &h.CompressedSize, &h.CompressedCSUM, &h.UncompressedCSUM} {
+	for _, f := range []interface{}{&h.Version, &h.LibVersion, &h.NeededVersion, &h.Method, &h.Level, &h.Flags, &h.Filter, &h.Mode, &h.Mtime, &h.GMTDiff, &n, &h.DataCSUM, &h.UnCompressedSize, &h.CompressedSize, &h.UnCompressedCSUM, &h.CompressedCSUM} {
 		switch f {
 		case &h.Filter:
 			if (h.Flags & fHFilter) == 0 {
