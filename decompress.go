@@ -82,7 +82,7 @@ func readHeader(r io.Reader) (*Header, error) {
 	var n byte
 	// This would be so easy were the variable data not in the middle. but ...
 	// We could use reflect here, but ... eh. It's not that complex.
-	for _, f := range []interface{}{&h.Version, &h.LibVersion, &h.NeededVersion, &h.Method, &h.Level, &h.Flags, &h.Filter, &h.Mode, &h.Mtime, &h.GMTDiff, &n, &h.DataCSUM, &h.UnCompressedSize, &h.CompressedSize, &h.UnCompressedCSUM, &h.CompressedCSUM} {
+	for _, f := range []interface{}{&h.Version, &h.LibVersion, &h.NeededVersion, &h.Method, &h.Level, &h.Flags, &h.Filter, &h.Mode, &h.Mtime, &h.GMTDiff, &n, &h.DataCSUM, &h.UnCompressedSize, &h.CompressedSize, &h.UncompressedCSUM, &h.CompressedCSUM} {
 		switch f {
 		case &h.Filter:
 			if (h.Flags & fHFilter) == 0 {
