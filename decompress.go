@@ -89,23 +89,19 @@ func readHeader(r io.Reader) (*Header, error) {
 				continue
 			}
 		case &n:
-			b := make([]byte, n)
-			if _, err := r.Read(b); err != nil {
-				return nil, fmt.Errorf("Error reading file name: %v", err)
+			if err := binary.Read(r, binary.BigEndian, f); err != nil {
+				return nil, err
 			}
 			Debug("Name is %d bytes", n)
 			name := make([]byte, n)
-			if _, err := r.Read(b); err != nil {
+			if _, err := r.Read(name); err != nil {
 				return nil, fmt.Errorf("Reading file name: %v", err)
 			}
 			h.Name = string(name)
 			Debug("Name is %q", name)
+			continue
 		case &h.CompressedCSUM:
 			if (h.Flags & (fChecksumAdler | fChecksumCRC32)) == 0 {
-				continue
-			}
-		case &h.GMTDiff:
-			if (h.Flags & fGMTDiff) == 0 {
 				continue
 			}
 		}
