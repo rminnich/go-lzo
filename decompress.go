@@ -276,9 +276,7 @@ func Decompress1X(r io.Reader, inLen int, outLen int) (out []byte, err error) {
 		// the input, so if the decompressor reads past the end of the input
 		// stream, a runtime error is raised. This saves about 7% of performance
 		// as the reading functions are very hot in the decompressor.
-		Debug("panic:")
 		if r := recover(); r != nil {
-			Debug("recover: %v %T", r, r)
 			if re, ok := r.(runtime.Error); ok {
 				if strings.HasPrefix(re.Error(), "runtime error: index out of range") {
 					err = io.EOF
