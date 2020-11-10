@@ -104,6 +104,10 @@ func readHeader(r io.Reader) (*Header, error) {
 			if (h.Flags & (fChecksumAdler | fChecksumCRC32)) == 0 {
 				continue
 			}
+		case &h.GMTDiff:
+			if (h.Flags & fGMTDiff) == 0 {
+				continue
+			}
 		}
 		if err := binary.Read(r, binary.BigEndian, f); err != nil {
 			return nil, err
